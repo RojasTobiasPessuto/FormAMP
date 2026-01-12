@@ -21,7 +21,7 @@ export function HeroSection() {
       </h1>
       
       <p className="text-lg text-slate-600 mb-6 max-w-2xl mx-auto">
-        Siempre estamos en la búsqueda de profesionales de la salud, que les interese sumarse a nuestro equipo profesional, que trabajen con pasión por la gente, proactividad y flexibilidad para adaptarse a los cambios, con ganas de asumir nuevos desafíos y que compartan nuestros valores de responsabilidad, cercanía, compromiso, innovación y entusiasmo. Si contas con estos requisitos te dejamos éste formulario para que completes con tus datos y podamos comunicarnos a la brevedad.
+        Buscamos profesionales de la salud que quieran sumarse a nuestro equipo, con vocación, compromiso y capacidad de adaptación. Si compartís nuestros valores y te gustan los nuevos desafíos, completá el formulario y nos contactaremos a la brevedad.
       </p>
       
       <div className="inline-flex items-center gap-2 text-sm text-slate-500">
