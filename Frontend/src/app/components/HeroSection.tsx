@@ -17,12 +17,11 @@ export function HeroSection() {
       </div>
       
       <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4 max-w-3xl mx-auto">
-        Queremos conocerte mejor para darte la mejor solución
+        + Trabaja con nosotros
       </h1>
       
       <p className="text-lg text-slate-600 mb-6 max-w-2xl mx-auto">
-        Completá este breve formulario y te ayudaremos a encontrar la solución
-        perfecta para tus necesidades. Solo nos tomará 3 minutos.
+        Siempre estamos en la búsqueda de profesionales de la salud, que les interese sumarse a nuestro equipo profesional, que trabajen con pasión por la gente, proactividad y flexibilidad para adaptarse a los cambios, con ganas de asumir nuevos desafíos y que compartan nuestros valores de responsabilidad, cercanía, compromiso, innovación y entusiasmo. Si contas con estos requisitos te dejamos éste formulario para que completes con tus datos y podamos comunicarnos a la brevedad.
       </p>
       
       <div className="inline-flex items-center gap-2 text-sm text-slate-500">
