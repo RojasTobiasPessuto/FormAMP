@@ -1,118 +1,123 @@
 import { motion } from "motion/react";
+import { Briefcase, FileText } from "lucide-react";
+import { FormRadioGroup } from "./FormRadioGroup";
 import { FormInput } from "./FormInput";
-import { FormSelect } from "./FormSelect";
-import { Building2 } from "lucide-react";
 
 interface FormStep2Props {
   data: {
-    nombre_empresa: string;
-    industria: string;
-    tamano_empresa: string;
-    facturacion_anual: string;
+    profesion: string;
+    profesion_otra: string;
+    matricula: string;
+    cuit_cuil: string;
+    monotributo: string;
   };
   onChange: (field: string, value: string) => void;
   errors: Record<string, string>;
 }
 
 export function FormStep2({ data, onChange, errors }: FormStep2Props) {
-  const industriasOptions = [
-    { value: "tecnologia", label: "Tecnología" },
-    { value: "servicios", label: "Servicios Profesionales" },
-    { value: "retail", label: "Retail / Comercio" },
-    { value: "salud", label: "Salud y Bienestar" },
-    { value: "educacion", label: "Educación" },
-    { value: "finanzas", label: "Finanzas y Seguros" },
-    { value: "manufactura", label: "Manufactura" },
-    { value: "real_estate", label: "Real Estate / Inmobiliaria" },
-    { value: "hosteleria", label: "Hostelería y Turismo" },
-    { value: "otro", label: "Otro" },
+  const profesionOptions = [
+    { value: "medico", label: "Médico/a" },
+    { value: "enfermero", label: "Enfermero/a" },
+    { value: "cuidador", label: "Cuidador/a" },
+    { value: "kinesiologo", label: "Kinesiólogo/a" },
+    { value: "psicomotricista", label: "Psicomotricista" },
+    { value: "psicologo", label: "Psicólogo/a" },
+    { value: "fonoaudiologo", label: "Fonoaudiólogo/a" },
+    { value: "paramedico", label: "Paramédico/a" },
+    { value: "otros", label: "Otros" },
   ];
 
-  const tamanoOptions = [
-    { value: "1-10", label: "1-10 empleados" },
-    { value: "11-50", label: "11-50 empleados" },
-    { value: "51-200", label: "51-200 empleados" },
-    { value: "201-500", label: "201-500 empleados" },
-    { value: "501+", label: "Más de 500 empleados" },
-  ];
-
-  const facturacionOptions = [
-    { value: "0-100k", label: "Menos de USD 100K" },
-    { value: "100k-500k", label: "USD 100K - 500K" },
-    { value: "500k-1m", label: "USD 500K - 1M" },
-    { value: "1m-5m", label: "USD 1M - 5M" },
-    { value: "5m+", label: "Más de USD 5M" },
-    { value: "prefiero_no_decir", label: "Prefiero no decir" },
+  const monotributoOptions = [
+    { value: "si", label: "Sí" },
+    { value: "no", label: "No" },
   ];
 
   return (
     <motion.div
-      className="w-full"
+      className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200"
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.3 }}
     >
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+      <div className="mb-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
-            <Building2 className="w-6 h-6 text-teal-600" />
+            <Briefcase className="w-6 h-6 text-teal-600" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-slate-900">
-              Tu Empresa
+            <h2 className="text-2xl font-bold text-slate-900">
+              Información Profesional
             </h2>
-            <p className="text-sm text-slate-600">
-              Cuéntanos sobre tu organización
+            <p className="text-sm text-slate-500">
+              Datos profesionales y fiscales
             </p>
           </div>
         </div>
+      </div>
 
-        <div className="space-y-6">
+      <div className="space-y-6">
+        <FormRadioGroup
+          label="Profesión"
+          name="profesion"
+          value={data.profesion}
+          onChange={(value) => onChange("profesion", value)}
+          options={profesionOptions}
+          error={errors.profesion}
+          required
+        />
+
+        {data.profesion === "otros" && (
           <FormInput
-            label="Nombre de la Empresa"
-            name="nombre_empresa"
-            placeholder="Ej: Acme Corp"
+            label="Especifique su profesión"
+            name="profesion_otra"
+            value={data.profesion_otra}
+            onChange={(value) => onChange("profesion_otra", value)}
+            placeholder="Ingrese su profesión"
+            error={errors.profesion_otra}
             required
-            value={data.nombre_empresa}
-            onChange={(value) => onChange("nombre_empresa", value)}
-            error={errors.nombre_empresa}
-            success={!errors.nombre_empresa && data.nombre_empresa.length > 0}
           />
+        )}
 
-          <FormSelect
-            label="Industria o Sector"
-            name="industria"
-            placeholder="Selecciona tu industria"
-            required
-            value={data.industria}
-            onChange={(value) => onChange("industria", value)}
-            error={errors.industria}
-            options={industriasOptions}
-            helperText="Esto nos ayuda a personalizar nuestra recomendación"
-          />
+        <FormInput
+          label="Nº de matrícula"
+          name="matricula"
+          value={data.matricula}
+          onChange={(value) => onChange("matricula", value)}
+          placeholder="Ingrese su número de matrícula"
+          helperText="Solo si corresponde"
+          error={errors.matricula}
+        />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormSelect
-              label="Tamaño de la Empresa"
-              name="tamano_empresa"
-              placeholder="Selecciona el tamaño"
+        <div className="border-t border-slate-200 pt-6">
+          <div className="flex items-center gap-2 mb-6">
+            <FileText className="w-5 h-5 text-teal-600" />
+            <h3 className="text-lg font-semibold text-slate-900">
+              Información Fiscal
+            </h3>
+          </div>
+
+          <div className="space-y-6">
+            <FormInput
+              label="CUIT / CUIL"
+              name="cuit_cuil"
+              value={data.cuit_cuil}
+              onChange={(value) => onChange("cuit_cuil", value)}
+              placeholder="XX-XXXXXXXX-X"
+              helperText="Formato con guiones. Máximo 13 caracteres"
+              error={errors.cuit_cuil}
               required
-              value={data.tamano_empresa}
-              onChange={(value) => onChange("tamano_empresa", value)}
-              error={errors.tamano_empresa}
-              options={tamanoOptions}
             />
 
-            <FormSelect
-              label="Facturación Anual (USD)"
-              name="facturacion_anual"
-              placeholder="Selecciona un rango"
-              value={data.facturacion_anual}
-              onChange={(value) => onChange("facturacion_anual", value)}
-              error={errors.facturacion_anual}
-              options={facturacionOptions}
-              helperText="Opcional"
+            <FormRadioGroup
+              label="¿Se encuentra inscripto en el monotributo?"
+              name="monotributo"
+              value={data.monotributo}
+              onChange={(value) => onChange("monotributo", value)}
+              options={monotributoOptions}
+              error={errors.monotributo}
+              required
             />
           </div>
         </div>

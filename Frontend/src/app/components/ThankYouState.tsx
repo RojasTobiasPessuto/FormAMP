@@ -20,21 +20,20 @@ export function ThankYouState() {
 
       <motion.h2
         className="text-3xl md:text-4xl font-bold text-slate-900 mb-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
       >
-        ¡Listo! Recibimos tu información
+        Formulario enviado correctamente
       </motion.h2>
 
       <motion.p
-        className="text-lg text-slate-600 mb-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        className="text-lg text-slate-600 mb-8 max-w-md mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
       >
-        Gracias por tomarte el tiempo de completar el formulario. Ya estamos
-        trabajando en tu propuesta personalizada.
+        Hemos recibido su información. Nos contactaremos si es necesario.
       </motion.p>
 
       <motion.div

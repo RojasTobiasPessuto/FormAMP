@@ -6,52 +6,65 @@ import { ProgressBar } from "./components/ProgressBar";
 import { FormStep1 } from "./components/FormStep1";
 import { FormStep2 } from "./components/FormStep2";
 import { FormStep3 } from "./components/FormStep3";
+import { FormStep4 } from "./components/FormStep4";
 import { ThankYouState } from "./components/ThankYouState";
 import { WhatsAppButton } from "./components/WhatsAppButton";
 
 interface FormData {
-  // Step 1: Personal Info
-  nombre_completo: string;
-  email: string;
+  // Step 1: Datos Personales
+  first_name: string;
+  last_name: string;
+  sexo: string;
+  fecha_nacimiento: string;
+
+  // Step 2: Información Profesional + Fiscal
+  profesion: string;
+  profesion_otra: string;
+  matricula: string;
+  cuit_cuil: string;
+  monotributo: string;
+
+  // Step 3: Contacto + Domicilio
   telefono: string;
-  cargo: string;
+  email: string;
+  localidad: string;
+  domicilio: string;
+  barrio: string;
+  aclaraciones_domicilio: string;
 
-  // Step 2: Company Info
-  nombre_empresa: string;
-  industria: string;
-  tamano_empresa: string;
-  facturacion_anual: string;
-
-  // Step 3: Goals & Needs
-  objetivo_principal: string;
-  presupuesto_estimado: string;
-  timeline_proyecto: string;
-  desafios_actuales: string;
+  // Step 4: Documentación + Observaciones
+  cv_upload: File[];
+  observaciones: string;
 }
 
 function App() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState<FormData>({
-    nombre_completo: "",
-    email: "",
+    first_name: "",
+    last_name: "",
+    sexo: "",
+    fecha_nacimiento: "",
+    profesion: "",
+    profesion_otra: "",
+    matricula: "",
+    cuit_cuil: "",
+    monotributo: "",
     telefono: "",
-    cargo: "",
-    nombre_empresa: "",
-    industria: "",
-    tamano_empresa: "",
-    facturacion_anual: "",
-    objetivo_principal: "",
-    presupuesto_estimado: "",
-    timeline_proyecto: "",
-    desafios_actuales: "",
+    email: "",
+    localidad: "",
+    domicilio: "",
+    barrio: "",
+    aclaraciones_domicilio: "",
+    cv_upload: [],
+    observaciones: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const totalSteps = 3;
+  const totalSteps = 4;
 
-  const handleFieldChange = (field: string, value: string) => {
+  const handleFieldChange = (field: string, value: string | File[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
@@ -67,49 +80,62 @@ function App() {
     const newErrors: Record<string, string> = {};
 
     if (step === 1) {
-      if (!formData.nombre_completo.trim()) {
-        newErrors.nombre_completo = "El nombre es obligatorio";
+      if (!formData.first_name.trim()) {
+        newErrors.first_name = "El nombre es obligatorio";
       }
-      if (!formData.email.trim()) {
-        newErrors.email = "El email es obligatorio";
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        newErrors.email = "Ingresá un email válido";
+      if (!formData.last_name.trim()) {
+        newErrors.last_name = "El apellido es obligatorio";
       }
-      if (!formData.telefono.trim()) {
-        newErrors.telefono = "El teléfono es obligatorio";
+      if (!formData.sexo) {
+        newErrors.sexo = "Seleccione una opción";
       }
-      if (!formData.cargo.trim()) {
-        newErrors.cargo = "El cargo es obligatorio";
+      if (!formData.fecha_nacimiento) {
+        newErrors.fecha_nacimiento = "La fecha de nacimiento es obligatoria";
       }
     }
 
     if (step === 2) {
-      if (!formData.nombre_empresa.trim()) {
-        newErrors.nombre_empresa = "El nombre de la empresa es obligatorio";
+      if (!formData.profesion) {
+        newErrors.profesion = "Seleccione una profesión";
       }
-      if (!formData.industria) {
-        newErrors.industria = "Seleccioná una industria";
+      if (formData.profesion === "otros" && !formData.profesion_otra.trim()) {
+        newErrors.profesion_otra = "Especifique su profesión";
       }
-      if (!formData.tamano_empresa) {
-        newErrors.tamano_empresa = "Seleccioná el tamaño de la empresa";
+      if (!formData.cuit_cuil.trim()) {
+        newErrors.cuit_cuil = "El CUIT/CUIL es obligatorio";
+      } else if (!/^\d{2}-\d{8}-\d{1}$/.test(formData.cuit_cuil)) {
+        newErrors.cuit_cuil = "Formato inválido. Use: XX-XXXXXXXX-X";
+      }
+      if (!formData.monotributo) {
+        newErrors.monotributo = "Seleccione una opción";
       }
     }
 
     if (step === 3) {
-      if (!formData.objetivo_principal) {
-        newErrors.objetivo_principal = "Seleccioná un objetivo principal";
+      if (!formData.telefono.trim()) {
+        newErrors.telefono = "El teléfono es obligatorio";
+      } else if (!/^\d{10}$/.test(formData.telefono)) {
+        newErrors.telefono = "Ingrese un número válido de 10 dígitos";
       }
-      if (!formData.presupuesto_estimado) {
-        newErrors.presupuesto_estimado = "Seleccioná un rango de presupuesto";
+      if (!formData.email.trim()) {
+        newErrors.email = "El email es obligatorio";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        newErrors.email = "Ingrese un email válido";
       }
-      if (!formData.timeline_proyecto) {
-        newErrors.timeline_proyecto = "Seleccioná un plazo";
+      if (!formData.localidad.trim()) {
+        newErrors.localidad = "La localidad es obligatoria";
       }
-      if (!formData.desafios_actuales.trim()) {
-        newErrors.desafios_actuales = "Contanos sobre tus desafíos";
-      } else if (formData.desafios_actuales.trim().length < 20) {
-        newErrors.desafios_actuales =
-          "Por favor, sé más específico (mínimo 20 caracteres)";
+      if (!formData.domicilio.trim()) {
+        newErrors.domicilio = "El domicilio es obligatorio";
+      }
+      if (!formData.barrio.trim()) {
+        newErrors.barrio = "El barrio es obligatorio";
+      }
+    }
+
+    if (step === 4) {
+      if (formData.cv_upload.length === 0) {
+        newErrors.cv_upload = "Debe adjuntar al menos un archivo";
       }
     }
 
@@ -138,17 +164,54 @@ function App() {
       return;
     }
 
-    // Simulate API call to GoHighLevel
-    console.log("Submitting to GoHighLevel:", formData);
+    // Prepare data for GoHighLevel API
+    const apiData = {
+      // Personal Info
+      first_name: formData.first_name,
+      last_name: formData.last_name,
+      sexo: formData.sexo,
+      fecha_nacimiento: formData.fecha_nacimiento,
 
-    // Here you would make the actual API call:
+      // Professional + Fiscal Info
+      profesion:
+        formData.profesion === "otros"
+          ? formData.profesion_otra
+          : formData.profesion,
+      matricula: formData.matricula || "N/A",
+      cuit_cuil: formData.cuit_cuil,
+      monotributo: formData.monotributo,
+
+      // Contact + Address
+      telefono: formData.telefono,
+      email: formData.email,
+      localidad: formData.localidad,
+      domicilio: formData.domicilio,
+      barrio: formData.barrio,
+      aclaraciones_domicilio: formData.aclaraciones_domicilio || "N/A",
+
+      // Documentation + Observations
+      cv_files_count: formData.cv_upload.length,
+      observaciones: formData.observaciones || "N/A",
+    };
+
+    console.log("Submitting to GoHighLevel:", apiData);
+    console.log("Files to upload:", formData.cv_upload);
+
+    // Here you would make the actual API call to GoHighLevel:
+    // const formDataToSend = new FormData();
+    // Object.entries(apiData).forEach(([key, value]) => {
+    //   formDataToSend.append(key, value);
+    // });
+    // formData.cv_upload.forEach((file, index) => {
+    //   formDataToSend.append(`cv_file_${index}`, file);
+    // });
+    //
     // const response = await fetch('YOUR_GOHIGHLEVEL_API_ENDPOINT', {
     //   method: 'POST',
     //   headers: {
-    //     'Content-Type': 'application/json',
     //     'Authorization': 'Bearer YOUR_API_KEY'
     //   },
-    //   body: JSON.stringify(formData)
+    //   body: formDataToSend
     // });
 
     // Simulate submission delay
@@ -179,7 +242,12 @@ function App() {
           {currentStep === 1 && (
             <FormStep1
               key="step1"
-              data={formData}
+              data={{
+                first_name: formData.first_name,
+                last_name: formData.last_name,
+                sexo: formData.sexo,
+                fecha_nacimiento: formData.fecha_nacimiento,
+              }}
               onChange={handleFieldChange}
               errors={errors}
             />
@@ -188,7 +256,13 @@ function App() {
           {currentStep === 2 && (
             <FormStep2
               key="step2"
-              data={formData}
+              data={{
+                profesion: formData.profesion,
+                profesion_otra: formData.profesion_otra,
+                matricula: formData.matricula,
+                cuit_cuil: formData.cuit_cuil,
+                monotributo: formData.monotributo,
+              }}
               onChange={handleFieldChange}
               errors={errors}
             />
@@ -197,7 +271,26 @@ function App() {
           {currentStep === 3 && (
             <FormStep3
               key="step3"
-              data={formData}
+              data={{
+                telefono: formData.telefono,
+                email: formData.email,
+                localidad: formData.localidad,
+                domicilio: formData.domicilio,
+                barrio: formData.barrio,
+                aclaraciones_domicilio: formData.aclaraciones_domicilio,
+              }}
+              onChange={handleFieldChange}
+              errors={errors}
+            />
+          )}
+
+          {currentStep === 4 && (
+            <FormStep4
+              key="step4"
+              data={{
+                cv_upload: formData.cv_upload,
+                observaciones: formData.observaciones,
+              }}
               onChange={handleFieldChange}
               errors={errors}
             />
