@@ -37,9 +37,14 @@ interface FormData {
   observaciones: string;
 }
 
+// 👇 Base del backend (setear en .env del front con VITE_API_BASE)
+const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:3001";
+
 function App() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formData, setFormData] = useState<FormData>({
     first_name: "",
     last_name: "",
@@ -160,65 +165,64 @@ function App() {
   };
 
   const handleSubmit = async () => {
-    if (!validateStep(currentStep)) {
-      return;
+    if (!validateStep(currentStep)) return;
+
+    setIsSubmitting(true);
+    const fd = new FormData();
+
+    try {
+      const fd = new FormData();
+
+      // Step 1
+      fd.append("first_name", formData.first_name);
+      fd.append("last_name", formData.last_name);
+      fd.append("sexo", formData.sexo);
+      fd.append("fecha_nacimiento", formData.fecha_nacimiento);
+
+      // Step 2
+      // ✅ Importante: mandar "profesion" como código (incluido "otros")
+      // y "profesion_otra" separado. El backend se encarga del mapping.
+      fd.append("profesion", formData.profesion);
+      fd.append("profesion_otra", formData.profesion_otra);
+      fd.append("matricula", formData.matricula);
+      fd.append("cuit_cuil", formData.cuit_cuil);
+      fd.append("monotributo", formData.monotributo);
+
+      // Step 3
+      fd.append("telefono", formData.telefono);
+      fd.append("email", formData.email);
+      fd.append("localidad", formData.localidad);
+      fd.append("domicilio", formData.domicilio);
+      fd.append("barrio", formData.barrio);
+      fd.append("aclaraciones_domicilio", formData.aclaraciones_domicilio);
+
+      // Step 4
+      fd.append("observaciones", formData.observaciones);
+
+      // ✅ Archivos: mismo key "cv_upload"
+      formData.cv_upload.forEach((file) => fd.append("cv_upload", file));
+
+      const res = await fetch(`${API_BASE}/leads/submit`, {
+        method: "POST",
+        body: fd,
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`HTTP ${res.status} - ${text}`);
+      }
+
+      const json = await res.json();
+      console.log("Backend OK:", json);
+
+      setIsSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      console.error("Error enviando al backend:", err);
+      alert("Ocurrió un error enviando el formulario. Revisá consola.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Prepare data for GoHighLevel API
-    const apiData = {
-      // Personal Info
-      first_name: formData.first_name,
-      last_name: formData.last_name,
-      sexo: formData.sexo,
-      fecha_nacimiento: formData.fecha_nacimiento,
-
-      // Professional + Fiscal Info
-      profesion:
-        formData.profesion === "otros"
-          ? formData.profesion_otra
-          : formData.profesion,
-      matricula: formData.matricula || "N/A",
-      cuit_cuil: formData.cuit_cuil,
-      monotributo: formData.monotributo,
-
-      // Contact + Address
-      telefono: formData.telefono,
-      email: formData.email,
-      localidad: formData.localidad,
-      domicilio: formData.domicilio,
-      barrio: formData.barrio,
-      aclaraciones_domicilio: formData.aclaraciones_domicilio || "N/A",
-
-      // Documentation + Observations
-      cv_files_count: formData.cv_upload.length,
-      observaciones: formData.observaciones || "N/A",
-    };
-
-    console.log("Submitting to GoHighLevel:", apiData);
-    console.log("Files to upload:", formData.cv_upload);
-
-    // Here you would make the actual API call to GoHighLevel:
-    // const formDataToSend = new FormData();
-    // Object.entries(apiData).forEach(([key, value]) => {
-    //   formDataToSend.append(key, value);
-    // });
-    // formData.cv_upload.forEach((file, index) => {
-    //   formDataToSend.append(`cv_file_${index}`, file);
-    // });
-    //
-    // const response = await fetch('YOUR_GOHIGHLEVEL_API_ENDPOINT', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Authorization': 'Bearer YOUR_API_KEY'
-    //   },
-    //   body: formDataToSend
-    // });
-
-    // Simulate submission delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    setIsSubmitted(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   if (isSubmitted) {
@@ -307,19 +311,21 @@ function App() {
           {currentStep > 1 ? (
             <button
               onClick={handleBack}
-              className="flex items-center gap-2 px-6 py-3.5 text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors font-medium"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 px-6 py-3.5 text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <ArrowLeft className="w-5 h-5" />
               Atrás
             </button>
           ) : (
-            <div /> // Spacer
+            <div />
           )}
 
           {currentStep < totalSteps ? (
             <button
               onClick={handleNext}
-              className="flex items-center gap-2 px-8 py-3.5 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium shadow-lg shadow-teal-600/20 ml-auto"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 px-8 py-3.5 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium shadow-lg shadow-teal-600/20 ml-auto disabled:opacity-60 disabled:cursor-not-allowed"
             >
               Continuar
               <ArrowRight className="w-5 h-5" />
@@ -327,9 +333,10 @@ function App() {
           ) : (
             <button
               onClick={handleSubmit}
-              className="flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-teal-600 to-teal-500 text-white rounded-lg hover:from-teal-700 hover:to-teal-600 transition-all font-medium shadow-lg shadow-teal-600/30 ml-auto"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-teal-600 to-teal-500 text-white rounded-lg hover:from-teal-700 hover:to-teal-600 transition-all font-medium shadow-lg shadow-teal-600/30 ml-auto disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Enviar Información
+              {isSubmitting ? "Enviando..." : "Enviar Información"}
               <Send className="w-5 h-5" />
             </button>
           )}
